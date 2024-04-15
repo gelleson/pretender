@@ -25,14 +25,15 @@ type Server struct {
 	contentType    ContentType
 	defaultContent []byte
 	logger         *zap.Logger
+	prefork        bool
 }
 
-func New(port int, contentType ContentType, defaultContent []byte) *Server {
+func New(port int, contentType ContentType, defaultContent []byte, prefork bool) *Server {
 	return &Server{
 		app: fiber.New(fiber.Config{
 			AppName:               "pretender",
 			DisableStartupMessage: true,
-			Prefork:               false,
+			Prefork:               prefork,
 			ReduceMemoryUsage:     true,
 		}),
 		port:           port,

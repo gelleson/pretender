@@ -53,7 +53,8 @@ echo '{"message": "Hello, Pipe!"}' | ./pretender
 
 - `--port`, `-p`: The port to listen on (default: `8080`).
 - `--content-type`, `-c`: The content type to use (default: `application/json`).
-- `--default-content`, `-d`: The default content to return if no data is piped (default: empty).
+- `--default-content`, `-d`: The default content to return if no data is piped (default: "").
+- `--prefork`, `-f`: Prefork the server (default: `false`).
 
 ## Development
 

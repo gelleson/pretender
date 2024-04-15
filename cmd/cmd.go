@@ -36,15 +36,29 @@ var app = &cli.App{
 			Usage:   "The default content to return",
 			Value:   EMPTY_CONTENT,
 		},
+		&cli.BoolFlag{
+			Name:    "prefork",
+			Aliases: []string{"f"},
+			Usage:   "Prefork the server",
+			Value:   false,
+		},
 	},
 	Action: func(c *cli.Context) error {
-
+		if !c.Bool("prefork") {
+			fmt.Println("Starting fork...")
+			defer fmt.Println("Fork stopped")
+		} else {
+			fmt.Println("Preforking...")
+			defer fmt.Println("Prefork stopped")
+		}
 		data, err := pipe.Read()
 		if err != nil && !errors.Is(err, pipe.NoPipe) {
 			return err
 		}
-		if data != nil {
-			fmt.Println("Data read from pipe")
+
+		if c.Bool("prefork") && data != nil {
+			fmt.Println("Reading from pipe does not work with prefork")
+			return nil
 		}
 
 		if data == nil && c.String("default-content") != EMPTY_CONTENT {
@@ -55,14 +69,14 @@ var app = &cli.App{
 			c.Int("port"),
 			server.ContentType(c.String("content-type")),
 			data,
+			c.Bool("prefork"),
 		)
 		return server.Start()
 	},
 }
 
 func Execute(args []string) error {
-	fmt.Println("Starting fork...")
-	defer fmt.Println("Fork stopped")
+
 	l := logger.Named("cmd")
 	err := app.Run(args)
 	if err != nil {
